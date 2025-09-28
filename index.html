@@ -1,18 +1,1074 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>你好，GitHub Pages！</title>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; margin: 40px; line-height: 1.6; }
-    h1 { margin-bottom: 0.2em; }
-    .muted { color: #666; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>六维成长记录系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            font-size: 14px;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        select, input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .quick-btn {
+            padding: 10px;
+            background: #f8f8f8;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .quick-btn:hover, .quick-btn.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .intensity-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .intensity-btn {
+            flex: 1;
+            padding: 10px;
+            background: #f8f8f8;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .intensity-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .auto-save-indicator {
+            margin-top: 10px;
+            padding: 8px;
+            background: #e8f5e9;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 12px;
+            color: #2e7d32;
+        }
+
+        .records-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .record-item {
+            background: #f8f8f8;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .record-info {
+            flex: 1;
+        }
+
+        .record-dimension {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 3px;
+        }
+
+        .record-activity {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 3px;
+        }
+
+        .record-meta {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .dimension-stats {
+            background: #f8f8f8;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .dimension-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .dimension-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .dimension-progress {
+            flex: 1;
+            margin: 0 15px;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        .dimension-score {
+            font-size: 14px;
+            font-weight: 600;
+            color: #667eea;
+            min-width: 45px;
+            text-align: right;
+        }
+
+        #radarChart {
+            margin: 20px auto;
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .export-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 12px;
+            background: #f8f8f8;
+            color: #333;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .date-filter {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .date-filter input {
+            flex: 1;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .sync-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #4caf50;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 1000;
+        }
+
+        .sync-status.show {
+            display: block;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        @media (max-width: 380px) {
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
 </head>
 <body>
-  <h1>你好，GitHub Pages！</h1>
-  <p class="muted">这是我的第一页 —— 从 0 开始。</p>
-  <p>你现在看到的内容来自 <code>index.html</code> 文件。</p>
+    <div class="container">
+        <h1>🎯 六维成长记录</h1>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('record')">📝 记录</button>
+            <button class="tab" onclick="switchTab('history')">📊 历史</button>
+            <button class="tab" onclick="switchTab('stats')">📈 统计</button>
+        </div>
+
+        <!-- 记录标签页 -->
+        <div id="record" class="tab-content active">
+            <div class="form-group">
+                <label>选择维度</label>
+                <div class="quick-actions" id="dimensionButtons">
+                    <div class="quick-btn" data-dimension="体能">💪 体能</div>
+                    <div class="quick-btn" data-dimension="技术">💻 技术</div>
+                    <div class="quick-btn" data-dimension="思考">📚 思考</div>
+                    <div class="quick-btn" data-dimension="审美">🎨 审美</div>
+                    <div class="quick-btn" data-dimension="人际与表达">🗣️ 人际</div>
+                    <div class="quick-btn" data-dimension="创造与输出">✍️ 创造</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>活动内容</label>
+                <input type="text" id="activity" placeholder="例如：阅读《深度工作》">
+            </div>
+
+            <div class="form-group">
+                <label>快速时长</label>
+                <div class="quick-actions" id="quickMinutes">
+                    <div class="quick-btn" data-minutes="5">5分钟</div>
+                    <div class="quick-btn" data-minutes="10">10分钟</div>
+                    <div class="quick-btn" data-minutes="15">15分钟</div>
+                    <div class="quick-btn" data-minutes="20">20分钟</div>
+                    <div class="quick-btn" data-minutes="30">30分钟</div>
+                    <div class="quick-btn" data-minutes="45">45分钟</div>
+                </div>
+                <input type="number" id="minutes" placeholder="或手动输入分钟数" style="margin-top: 10px;">
+            </div>
+
+            <div class="form-group">
+                <label>强度</label>
+                <div class="intensity-group">
+                    <button class="intensity-btn" data-intensity="1">😌 轻松</button>
+                    <button class="intensity-btn active" data-intensity="2">💪 适中</button>
+                    <button class="intensity-btn" data-intensity="3">🔥 高强</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>备注（选填）</label>
+                <textarea id="notes" placeholder="记录一些想法..."></textarea>
+            </div>
+
+            <button class="btn-primary" onclick="addRecord()">✅ 添加记录</button>
+            
+            <div class="auto-save-indicator">
+                🔄 数据自动保存 · 最后更新: <span id="lastSaveTime">-</span>
+            </div>
+        </div>
+
+        <!-- 历史标签页 -->
+        <div id="history" class="tab-content">
+            <div class="date-filter">
+                <input type="date" id="filterStart" onchange="filterRecords()">
+                <input type="date" id="filterEnd" onchange="filterRecords()">
+            </div>
+            <div id="recordsList" class="records-list"></div>
+        </div>
+
+        <!-- 统计标签页 -->
+        <div id="stats" class="tab-content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">本周总点数</div>
+                    <div class="stat-value" id="weekTotal">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">今日点数</div>
+                    <div class="stat-value" id="todayTotal">0</div>
+                </div>
+            </div>
+
+            <div class="dimension-stats">
+                <h3 style="margin-bottom: 15px; color: #333;">本周进度</h3>
+                <div id="dimensionProgress"></div>
+            </div>
+
+            <canvas id="radarChart" width="300" height="300"></canvas>
+
+            <div class="export-section">
+                <button class="btn-secondary" onclick="exportData()">📥 导出备份 (JSON)</button>
+                <button class="btn-secondary" onclick="importData()">📤 导入数据</button>
+                <input type="file" id="importFile" style="display: none;" accept=".json" onchange="handleImport(event)">
+                <button class="btn-secondary" onclick="clearAllData()">🗑️ 清空所有数据</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="sync-status" id="syncStatus">✅ 已同步</div>
+
+    <script>
+        // 数据存储
+        let records = [];
+        let selectedDimension = '';
+        let selectedIntensity = 2;
+        let selectedMinutes = 0;
+
+        // 维度配置
+        const dimensions = {
+            '体能': { target: 30, color: '#ff6b6b' },
+            '技术': { target: 40, color: '#4ecdc4' },
+            '思考': { target: 30, color: '#45b7d1' },
+            '审美': { target: 15, color: '#f7b731' },
+            '人际与表达': { target: 15, color: '#5f27cd' },
+            '创造与输出': { target: 30, color: '#00d2d3' }
+        };
+
+        // 初始化
+        function init() {
+            // 先尝试从localStorage加载数据
+            loadRecords();
+            setupEventListeners();
+            updateStats();
+            displayRecords();
+            updateLastSaveTime();
+            
+            // 设置今天日期为默认筛选结束日期
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('filterEnd').value = today;
+            
+            // 设置一周前为默认筛选开始日期
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            document.getElementById('filterStart').value = weekAgo.toISOString().split('T')[0];
+            
+            // 显示初始化成功消息
+            if (records.length > 0) {
+                showToast(`📊 已加载 ${records.length} 条历史记录`);
+            } else {
+                showToast('🚀 欢迎使用六维成长记录系统');
+            }
+        }
+
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 维度选择
+            document.querySelectorAll('#dimensionButtons .quick-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('#dimensionButtons .quick-btn').forEach(b => b.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedDimension = this.dataset.dimension;
+                });
+            });
+
+            // 快速时长选择
+            document.querySelectorAll('#quickMinutes .quick-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('#quickMinutes .quick-btn').forEach(b => b.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedMinutes = parseInt(this.dataset.minutes);
+                    document.getElementById('minutes').value = selectedMinutes;
+                });
+            });
+
+            // 强度选择
+            document.querySelectorAll('.intensity-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.intensity-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    selectedIntensity = parseInt(this.dataset.intensity);
+                });
+            });
+
+            // 手动输入分钟数时清除快速选择
+            document.getElementById('minutes').addEventListener('input', function() {
+                document.querySelectorAll('#quickMinutes .quick-btn').forEach(b => b.classList.remove('selected'));
+                selectedMinutes = parseInt(this.value) || 0;
+            });
+
+            // 监听页面关闭/刷新事件，确保数据保存
+            window.addEventListener('beforeunload', () => {
+                saveRecords();
+            });
+        }
+
+        // 切换标签页
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+            
+            if (tabName === 'stats') {
+                updateStats();
+                drawRadarChart();
+            } else if (tabName === 'history') {
+                displayRecords();
+            }
+        }
+
+        // 添加记录
+        function addRecord() {
+            const activity = document.getElementById('activity').value;
+            const minutes = parseInt(document.getElementById('minutes').value) || selectedMinutes;
+            const notes = document.getElementById('notes').value;
+
+            if (!selectedDimension) {
+                alert('请选择一个维度');
+                return;
+            }
+
+            if (!activity) {
+                alert('请输入活动内容');
+                return;
+            }
+
+            if (!minutes || minutes <= 0) {
+                alert('请输入有效的时长');
+                return;
+            }
+
+            const points = Math.ceil(minutes / 5);
+            const weightedPoints = points * (selectedIntensity === 1 ? 0.9 : selectedIntensity === 2 ? 1.0 : 1.15);
+
+            const record = {
+                id: Date.now(),
+                date: new Date().toISOString().split('T')[0],
+                dimension: selectedDimension,
+                activity: activity,
+                minutes: minutes,
+                points: points,
+                weightedPoints: weightedPoints,
+                intensity: selectedIntensity,
+                notes: notes,
+                timestamp: new Date().toISOString()
+            };
+
+            records.push(record);
+            saveRecords(); // 自动保存到localStorage
+            
+            // 清空表单
+            document.getElementById('activity').value = '';
+            document.getElementById('minutes').value = '';
+            document.getElementById('notes').value = '';
+            document.querySelectorAll('#dimensionButtons .quick-btn').forEach(b => b.classList.remove('selected'));
+            document.querySelectorAll('#quickMinutes .quick-btn').forEach(b => b.classList.remove('selected'));
+            selectedDimension = '';
+            selectedMinutes = 0;
+
+            // 显示成功提示
+            showToast('✅ 记录添加成功！');
+            showSyncStatus();
+            
+            // 更新显示
+            updateStats();
+            updateLastSaveTime();
+        }
+
+        // 显示记录列表
+        function displayRecords(filteredRecords = null) {
+            const list = document.getElementById('recordsList');
+            const recordsToShow = filteredRecords || filterRecordsByDate();
+            
+            if (recordsToShow.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                        <p>暂无记录</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = recordsToShow
+                .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                .map(record => `
+                    <div class="record-item">
+                        <div class="record-info">
+                            <div class="record-dimension">${getDimensionEmoji(record.dimension)} ${record.dimension}</div>
+                            <div class="record-activity">${record.activity}</div>
+                            <div class="record-meta">
+                                ${record.date} · ${record.minutes}分钟 · ${record.points}点 · ${getIntensityText(record.intensity)}
+                                ${record.notes ? `<br>备注: ${record.notes}` : ''}
+                            </div>
+                        </div>
+                        <button class="delete-btn" onclick="deleteRecord(${record.id})">删除</button>
+                    </div>
+                `).join('');
+        }
+
+        // 筛选记录
+        function filterRecordsByDate() {
+            const startDate = document.getElementById('filterStart').value;
+            const endDate = document.getElementById('filterEnd').value;
+            
+            return records.filter(record => {
+                if (startDate && record.date < startDate) return false;
+                if (endDate && record.date > endDate) return false;
+                return true;
+            });
+        }
+
+        function filterRecords() {
+            displayRecords();
+        }
+
+        // 删除记录
+        function deleteRecord(id) {
+            if (confirm('确定要删除这条记录吗？')) {
+                records = records.filter(r => r.id !== id);
+                saveRecords(); // 自动保存
+                displayRecords();
+                updateStats();
+                updateLastSaveTime();
+                showToast('记录已删除');
+                showSyncStatus();
+            }
+        }
+
+        // 更新统计
+        function updateStats() {
+            const today = new Date().toISOString().split('T')[0];
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            
+            const weekRecords = records.filter(r => new Date(r.date) >= weekAgo);
+            const todayRecords = records.filter(r => r.date === today);
+            
+            // 计算总分
+            const weekTotal = weekRecords.reduce((sum, r) => sum + r.weightedPoints, 0);
+            const todayTotal = todayRecords.reduce((sum, r) => sum + r.weightedPoints, 0);
+            
+            document.getElementById('weekTotal').textContent = Math.round(weekTotal);
+            document.getElementById('todayTotal').textContent = Math.round(todayTotal);
+            
+            // 更新维度进度
+            updateDimensionProgress(weekRecords);
+        }
+
+        // 更新维度进度
+        function updateDimensionProgress(weekRecords) {
+            const progressDiv = document.getElementById('dimensionProgress');
+            let html = '';
+            
+            for (const [dimension, config] of Object.entries(dimensions)) {
+                const dimRecords = weekRecords.filter(r => r.dimension === dimension);
+                const points = dimRecords.reduce((sum, r) => sum + r.weightedPoints, 0);
+                const score = Math.min(100, (points / config.target) * 100);
+                
+                html += `
+                    <div class="dimension-row">
+                        <span class="dimension-name">${getDimensionEmoji(dimension)} ${dimension}</span>
+                        <div class="dimension-progress">
+                            <div class="progress-fill" style="width: ${score}%"></div>
+                        </div>
+                        <span class="dimension-score">${Math.round(score)}%</span>
+                    </div>
+                `;
+            }
+            
+            progressDiv.innerHTML = html;
+        }
+
+        // 绘制雷达图
+        function drawRadarChart() {
+            const canvas = document.getElementById('radarChart');
+            const ctx = canvas.getContext('2d');
+            const centerX = 150;
+            const centerY = 150;
+            const radius = 100;
+            
+            // 清空画布
+            ctx.clearRect(0, 0, 300, 300);
+            
+            // 获取本周数据
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            const weekRecords = records.filter(r => new Date(r.date) >= weekAgo);
+            
+            // 计算各维度得分
+            const scores = [];
+            const labels = [];
+            
+            for (const [dimension, config] of Object.entries(dimensions)) {
+                const dimRecords = weekRecords.filter(r => r.dimension === dimension);
+                const points = dimRecords.reduce((sum, r) => sum + r.weightedPoints, 0);
+                const score = Math.min(100, (points / config.target) * 100);
+                scores.push(score);
+                labels.push(dimension);
+            }
+            
+            const angleStep = (Math.PI * 2) / scores.length;
+            
+            // 绘制网格
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 1;
+            
+            for (let level = 1; level <= 5; level++) {
+                ctx.beginPath();
+                for (let i = 0; i < scores.length; i++) {
+                    const angle = i * angleStep - Math.PI / 2;
+                    const x = centerX + Math.cos(angle) * (radius * level / 5);
+                    const y = centerY + Math.sin(angle) * (radius * level / 5);
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.closePath();
+                ctx.stroke();
+            }
+            
+            // 绘制轴线
+            for (let i = 0; i < scores.length; i++) {
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                const angle = i * angleStep - Math.PI / 2;
+                const x = centerX + Math.cos(angle) * radius;
+                const y = centerY + Math.sin(angle) * radius;
+                ctx.lineTo(x, y);
+                ctx.stroke();
+            }
+            
+            // 绘制数据区域
+            ctx.fillStyle = 'rgba(102, 126, 234, 0.3)';
+            ctx.strokeStyle = '#667eea';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            for (let i = 0; i < scores.length; i++) {
+                const angle = i * angleStep - Math.PI / 2;
+                const value = scores[i] / 100 * radius;
+                const x = centerX + Math.cos(angle) * value;
+                const y = centerY + Math.sin(angle) * value;
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            
+            // 绘制标签
+            ctx.fillStyle = '#333';
+            ctx.font = '12px sans-serif';
+            ctx.textAlign = 'center';
+            
+            for (let i = 0; i < labels.length; i++) {
+                const angle = i * angleStep - Math.PI / 2;
+                const x = centerX + Math.cos(angle) * (radius + 20);
+                const y = centerY + Math.sin(angle) * (radius + 20);
+                ctx.fillText(labels[i], x, y + 3);
+            }
+        }
+
+        // 获取维度emoji
+        function getDimensionEmoji(dimension) {
+            const emojis = {
+                '体能': '💪',
+                '技术': '💻',
+                '思考': '📚',
+                '审美': '🎨',
+                '人际与表达': '🗣️',
+                '创造与输出': '✍️'
+            };
+            return emojis[dimension] || '📌';
+        }
+
+        // 获取强度文字
+        function getIntensityText(intensity) {
+            const texts = {
+                1: '😌 轻松',
+                2: '💪 适中',
+                3: '🔥 高强'
+            };
+            return texts[intensity] || '适中';
+        }
+
+        // 显示提示
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                z-index: 1000;
+                animation: slideDown 0.3s ease;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideUp 0.3s ease';
+                setTimeout(() => document.body.removeChild(toast), 300);
+            }, 2000);
+        }
+
+        // 显示同步状态
+        function showSyncStatus() {
+            const status = document.getElementById('syncStatus');
+            status.classList.add('show');
+            setTimeout(() => {
+                status.classList.remove('show');
+            }, 2000);
+        }
+
+        // 数据持久化 - 使用localStorage
+        function saveRecords() {
+            try {
+                const data = {
+                    version: '2.0',
+                    records: records,
+                    lastSaved: new Date().toISOString()
+                };
+                localStorage.setItem('growthTrackerData', JSON.stringify(data));
+                return true;
+            } catch (e) {
+                console.error('保存数据失败:', e);
+                showToast('⚠️ 数据保存失败，请导出备份');
+                return false;
+            }
+        }
+
+        function loadRecords() {
+            try {
+                const savedData = localStorage.getItem('growthTrackerData');
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    // 兼容不同版本
+                    if (data.version && data.records) {
+                        records = data.records;
+                    } else if (Array.isArray(data)) {
+                        records = data;
+                    }
+                    console.log('成功加载数据:', records.length, '条记录');
+                }
+            } catch (e) {
+                console.error('加载数据失败:', e);
+                records = [];
+            }
+        }
+
+        // 更新最后保存时间显示
+        function updateLastSaveTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('zh-CN', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            document.getElementById('lastSaveTime').textContent = timeStr;
+        }
+
+        // 导出数据
+        function exportData() {
+            const dataStr = JSON.stringify({
+                version: '2.0',
+                exportedAt: new Date().toISOString(),
+                records: records,
+                statistics: {
+                    totalRecords: records.length,
+                    firstRecord: records.length > 0 ? records[0].date : null,
+                    lastRecord: records.length > 0 ? records[records.length - 1].date : null
+                }
+            }, null, 2);
+            
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `growth_tracker_backup_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+            showToast('📥 数据已导出');
+        }
+
+        // 导入数据
+        function importData() {
+            document.getElementById('importFile').click();
+        }
+
+        function handleImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    let importedRecords = [];
+                    
+                    // 兼容不同版本格式
+                    if (importedData.version && importedData.records) {
+                        importedRecords = importedData.records;
+                    } else if (Array.isArray(importedData)) {
+                        importedRecords = importedData;
+                    } else {
+                        throw new Error('无效的数据格式');
+                    }
+                    
+                    // 询问是否合并或替换
+                    if (records.length > 0) {
+                        const choice = confirm(
+                            `当前有 ${records.length} 条记录。\n\n` +
+                            `确定：合并数据（保留现有+导入新数据）\n` +
+                            `取消：替换数据（只保留导入的数据）`
+                        );
+                        
+                        if (choice) {
+                            // 合并数据，去重
+                            const existingIds = new Set(records.map(r => r.id));
+                            const newRecords = importedRecords.filter(r => !existingIds.has(r.id));
+                            records = [...records, ...newRecords];
+                            showToast(`📤 合并导入 ${newRecords.length} 条新记录`);
+                        } else {
+                            records = importedRecords;
+                            showToast(`📤 替换导入 ${importedRecords.length} 条记录`);
+                        }
+                    } else {
+                        records = importedRecords;
+                        showToast(`📤 导入 ${importedRecords.length} 条记录`);
+                    }
+                    
+                    saveRecords();
+                    updateStats();
+                    displayRecords();
+                    updateLastSaveTime();
+                    
+                } catch (error) {
+                    alert('导入失败：' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            
+            // 清空input，允许重复导入同一文件
+            event.target.value = '';
+        }
+
+        // 清空数据
+        function clearAllData() {
+            if (confirm('确定要清空所有记录吗？此操作不可恢复！\n\n建议先导出备份再清空。')) {
+                if (confirm('再次确认：是否已经导出备份？\n\n点击"确定"将清空所有数据。')) {
+                    records = [];
+                    saveRecords();
+                    updateStats();
+                    displayRecords();
+                    updateLastSaveTime();
+                    showToast('🗑️ 所有数据已清空');
+                    showSyncStatus();
+                }
+            }
+        }
+
+        // 添加动画样式
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from { transform: translate(-50%, -100%); opacity: 0; }
+                to { transform: translate(-50%, 0); opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { transform: translate(-50%, 0); opacity: 1; }
+                to { transform: translate(-50%, -100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // 定期自动保存（每分钟）
+        setInterval(() => {
+            if (records.length > 0) {
+                saveRecords();
+                console.log('自动保存完成');
+            }
+        }, 60000);
+
+        // 初始化应用
+        init();
+    </script>
 </body>
 </html>
